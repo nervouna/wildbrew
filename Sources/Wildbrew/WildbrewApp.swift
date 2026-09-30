@@ -1,5 +1,9 @@
 import SwiftUI
 
 @main struct WildbrewApp: App {
-  var body: some Scene { WindowGroup { Text("Wildbrew").frame(minWidth: 900, minHeight: 600) } }
+  @State private var model = AppModel()
+  var body: some Scene {
+    WindowGroup { RootView(model: model).frame(minWidth: 1000, minHeight: 700).task { model.launch() } }
+    Settings { SettingsView(model: model).frame(width: 640, height: 650) }
+  }
 }

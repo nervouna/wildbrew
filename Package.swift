@@ -18,4 +18,5 @@ let package = Package(
     .executableTarget(name: "Wildbrew", dependencies: ["WildbrewCore"]),
     .executableTarget(name: "wildbrew-check", dependencies: ["WildbrewCore"]),
     .testTarget(name: "WildbrewCoreTests", dependencies: ["WildbrewCore"]),
+    .testTarget(name: "WildbrewAppTests", dependencies: ["Wildbrew", "WildbrewCore"]),
   ])
