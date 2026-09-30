@@ -14,6 +14,8 @@ The runner inherits the application process environment and applies settings ove
 
 ## Build and test
 
+App packaging uses Xcode with Icon Composer support to compile `Resources/AppIcon/WildbrewAppIcon.icon`. The native document disables Liquid Glass. See [app icon](../Resources/AppIcon/README.md) for source assets and runtime validation.
+
 ```sh
 swift test --disable-sandbox --scratch-path /private/tmp/wildbrew-build --jobs 2
 ./scripts/build-app.sh

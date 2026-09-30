@@ -24,6 +24,12 @@ cat > "$app/Contents/Info.plist" <<'PLIST'
 <key>NSAppleEventsUsageDescription</key><string>在终端执行 Homebrew 命令。</string>
 </dict></plist>
 PLIST
+xcrun actool Resources/AppIcon/WildbrewAppIcon.icon \
+  --compile "$app/Contents/Resources" \
+  --platform macosx --minimum-deployment-target 15.0 \
+  --app-icon WildbrewAppIcon \
+  --output-partial-info-plist "$scratch/wildbrew-icon-info.plist"
+/usr/libexec/PlistBuddy -c "Merge '$scratch/wildbrew-icon-info.plist'" "$app/Contents/Info.plist"
 codesign --force --sign - "$app"
 codesign --force --sign - dist/wildbrew-check
 codesign --verify --strict "$app"
