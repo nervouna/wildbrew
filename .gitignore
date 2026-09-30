@@ -1,0 +1,7 @@
+.build/
+.local/
+.swiftpm/
+.agents/
+skills-lock.json
+dist/
+.DS_Store
