@@ -20,7 +20,7 @@ struct PackagesView: View {
     return model.packageDetails[id] ?? rows.first { $0.id == id }
   }
   var body: some View {
-    HSplitView {
+    HStack(spacing: 0) {
       VStack {
         HStack {
           TextField("搜索软件", text: $search)
@@ -33,17 +33,18 @@ struct PackagesView: View {
           TableColumn("安装") { Text($0.installedVersions.joined(separator: ", ")) }.width(min: 70, ideal: 95)
           TableColumn("类型") { Text($0.kind.rawValue) }.width(65)
           TableColumn("描述", value: \.summary)
-        }.onChange(of: selection) { focusedPackage = nil }
+        }.frame(maxHeight: .infinity).onChange(of: selection) { focusedPackage = nil }
         HStack {
           Button("安装所选", systemImage: "arrow.down.circle") { model.packageAction("install", selected) }.disabled(selected.isEmpty)
           Button("升级所选", systemImage: "arrow.up.circle") { model.packageAction("upgrade", selected) }.disabled(selected.isEmpty)
           if installedOnly { Button("卸载所选", systemImage: "trash") { model.packageAction("uninstall", selected) }.disabled(selected.isEmpty) }
           Spacer(); Text("\(rows.count)").foregroundStyle(.secondary)
         }.padding()
-      }.frame(minWidth: 480)
-      if let detail { PackageDetailView(model: model, package: detail).frame(minWidth: 300, idealWidth: 390) }
-      else { ContentUnavailableView("未选择软件", systemImage: "shippingbox").frame(minWidth: 260) }
-    }.toolbar {
+      }.frame(minWidth: 480, maxWidth: .infinity, maxHeight: .infinity)
+      Divider()
+      if let detail { PackageDetailView(model: model, package: detail).frame(width: 300).frame(maxHeight: .infinity) }
+      else { ContentUnavailableView("未选择软件", systemImage: "shippingbox").frame(width: 300).frame(maxHeight: .infinity) }
+    }.frame(maxWidth: .infinity, maxHeight: .infinity).toolbar {
       Button("读取目录", systemImage: "square.grid.2x2") { Task { await model.loadCatalog() } }
       Button("查看占用", systemImage: "internaldrive") { model.enqueue(model.commands.sizes()) }
     }
