@@ -26,4 +26,4 @@ Wildbrew 是 macOS 原生 Homebrew 管理应用，支持 Formula、Cask、服务
 
 ## 构建
 
-构建、签名、测试和隔离验收见 [技术说明](docs/architecture.md)。当前产物使用本地 ad hoc 签名。
+构建、签名、测试和隔离验收见 [技术说明](docs/architecture.md)。当前产物使用本地 ad hoc 签名。实际验收范围见 [验收记录](docs/validation.md)。

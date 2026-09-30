@@ -25,6 +25,7 @@ import WildbrewCore
   var packageDetails: [String: BrewPackage] = [:]
   @ObservationIgnored private var hasLaunched = false
   @ObservationIgnored private var active: Task<Void, Never>?
+  @ObservationIgnored private var privilegedSupervisors: [UUID: PrivilegedSupervisor] = [:]
   @ObservationIgnored private var timer: Task<Void, Never>?
   var commands: CommandFactory { CommandFactory(brewPath: preferences.brew.brewPath) }
   var packages: [BrewPackage] {
@@ -78,13 +79,19 @@ import WildbrewCore
     let record = tasks[index]
     tasks[index].status = .running
     active = Task {
+      var supervisor: PrivilegedSupervisor?
       do {
         var execution = record.command
         if execution.executable == "/usr/bin/sudo" {
           var privileged = execution
           privileged.executable = privileged.arguments.removeFirst()
           let rootRecord = TaskRecord(command: privileged, settings: record.settings, destination: record.destination)
-          let script = "do shell script \"" + Self.appleScriptString(rootRecord.shellCommand) + "\" with administrator privileges"
+          let lifetime = try PrivilegedSupervisor()
+          supervisor = lifetime
+          self.privilegedSupervisors[record.id] = lifetime
+          try Task.checkCancellation()
+          let supervised = lifetime.shellCommand(shell: rootRecord.shellCommand, title: record.command.title, mutatesState: record.command.mutatesState)
+          let script = "do shell script \"" + Self.appleScriptString(supervised) + "\" with administrator privileges"
           execution = BrewCommand(executable: "/usr/bin/osascript", arguments: ["-e", script], title: record.command.title, mutatesState: record.command.mutatesState)
         }
         let result = try await BrewRunner().run(execution, settings: record.settings) { output in
@@ -108,6 +115,11 @@ import WildbrewCore
           self.tasks[index].status = Task.isCancelled ? .cancelled : .failed
           self.tasks[index].output += error.localizedDescription + "\n"
         }
+      }
+      if let supervisor {
+        // An unstructured task can wait for root cleanup even when this task is cancelled.
+        await Task { await supervisor.finish() }.value
+        self.privilegedSupervisors.removeValue(forKey: record.id)
       }
       if record.command.mutatesState {
         self.packageDetails.removeAll()
@@ -146,7 +158,7 @@ import WildbrewCore
   }
   func cancel(_ id: UUID) {
     guard let index = tasks.firstIndex(where: { $0.id == id }) else { return }
-    if tasks[index].status == .running { active?.cancel() }
+    if tasks[index].status == .running { privilegedSupervisors[id]?.cancel(); active?.cancel() }
     else if tasks[index].status == .queued { tasks[index].status = .cancelled; pump() }
   }
   func retry(_ record: TaskRecord) {
