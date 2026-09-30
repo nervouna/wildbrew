@@ -32,3 +32,9 @@ The VM has 2 CPUs and 4096 MiB RAM. It ran without host clipboard, audio or USB 
 The reusable VM is `wildbrew-test`. Its disk and the downloaded OCI image cache remain under `.local/tart`; the Tart binary remains under `.local/tools`. `scripts/tart.sh` sets `TART_NO_AUTO_PRUNE=1`. Stop the guest after use; do not delete the VM or prune its image cache when preserving this environment.
 
 Local raw evidence is retained in the ignored `.local/acceptance/2026-09-30/` directory. It includes build/test logs, guest command results, screenshots, source hashes and host state comparisons. Temporary VNC credentials are excluded. The app and acceptance helper are in `dist/`, also ignored by Git.
+
+## Task progress indicator
+
+A subsequent UI change adds native indeterminate linear progress bars to the task console and running rows in the task table. It follows the running queue entry even when another entry is selected; it does not derive or display a completion percentage.
+
+The release build and signature verification passed. In the retained Tart guest, a delayed wrapper delegated to real `brew update`; progress appeared while the task ran and disappeared after completion. A second run verified cancellation and removal of the progress indicator. Screenshots and build evidence are retained in `.local/acceptance/progress/`. The updated executable SHA-256 is `d743c17b4140d191305f1b4105d436e532f64bbd7e276e9f8b1aa6b6c4ee46e4`. This UI-only change added no tests and reused the earlier core and queue test evidence.

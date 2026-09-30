@@ -3,8 +3,16 @@ import SwiftUI
 struct TaskConsoleView: View {
   @Bindable var model: AppModel
   var record: TaskRecord? { model.tasks.first { $0.id == model.selectedTask } ?? model.tasks.last }
+  var running: TaskRecord? { model.tasks.first { $0.status == .running } }
   var body: some View {
     VStack(alignment: .leading) {
+      if let running {
+        if running.id != record?.id {
+          Text(running.command.title).font(.caption).foregroundStyle(.secondary)
+        }
+        ProgressView().progressViewStyle(.linear)
+          .accessibilityLabel(running.command.title)
+      }
       if let record {
         HStack {
           Text(record.command.title).bold()

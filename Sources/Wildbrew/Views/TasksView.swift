@@ -6,7 +6,15 @@ struct TasksView: View {
     VSplitView {
       Table(model.tasks, selection: $model.selectedTask) {
         TableColumn("操作") { Text($0.command.title) }
-        TableColumn("状态") { Text($0.status.rawValue) }
+        TableColumn("状态") { record in
+          HStack {
+            Text(record.status.rawValue)
+            if record.status == .running {
+              ProgressView().progressViewStyle(.linear).frame(width: 80)
+                .accessibilityLabel(record.command.title)
+            }
+          }
+        }
         TableColumn("时间") { Text($0.started, format: .dateTime.hour().minute().second()) }
         TableColumn("退出码") { Text($0.exitCode.map(String.init) ?? "") }
       }
