@@ -1,49 +1,84 @@
 # Wildbrew
 
-<img src="Resources/AppIcon/Preview.png" alt="Wildbrew 图标" width="128">
+English | [简体中文](README.zh-CN.md)
 
-Wildbrew 是 macOS 原生 Homebrew 管理应用，支持 Formula、Cask、服务、软件源和 Brewfile。界面使用中文，任务窗口显示 Homebrew 的原始输出。
+[![Release](https://img.shields.io/github/v/release/nervouna/wildbrew)](https://github.com/nervouna/wildbrew/releases/latest)
+![macOS 15+](https://img.shields.io/badge/macOS-15%2B-lightgrey)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-这是自用实验项目，使用 SwiftUI、SF Symbols 和 Swift Subprocess 实现。应用图标由 Icon Composer 制作，关闭 Liquid Glass 效果。
+<!-- banner -->
 
-## 安装和更新
+<img src="Resources/AppIcon/Preview.png" alt="Wildbrew icon" width="128">
 
-需要 macOS 15 或更新版本、已安装的 Homebrew，以及支持 Swift 6.2 和 Icon Composer 的 Xcode。本项目提供源码构建，产物使用本地 ad hoc 签名。
+Wildbrew is a native macOS app for managing Homebrew: formulae, casks, services, taps and Brewfiles. It runs the `brew` commands for you, one at a time, and shows Homebrew's own output in a task window.
+
+<!-- screenshots -->
+
+## Status
+
+Wildbrew is a personal, experimental project, built for and used by its author. It is for people who already use Homebrew and want a window on top of it, not a replacement for it.
+
+Wildbrew runs real Homebrew commands on your Mac. They install, upgrade and uninstall software, start and stop services, and change Homebrew settings, exactly as the same `brew` command in Terminal would. Some actions remove things: 清理环境 (Clean up environment) runs `brew bundle cleanup --force`, which removes everything the open Brewfile does not declare, and 卸载并移除数据 (Uninstall and remove data) runs `brew uninstall --zap` on a cask, which also deletes the app's data and shared files. These run when you click them; there is no confirmation dialog. System service actions run as root after the macOS administrator prompt.
+
+To run it you need macOS 15 or later and Homebrew. To build it you need Xcode with Swift 6.2 and Icon Composer support. It has been checked end to end on Apple Silicon with macOS 26; Intel Macs and macOS 15 are targeted but not yet verified ([validation record](docs/validation.md)).
+
+The interface is in Chinese only. This README gives each Chinese name followed by an English translation.
+
+Releases are source only, with no prebuilt app: build it from source as shown below. The build is ad hoc signed for local use, not notarized.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) to report a bug or send a fix, and [SECURITY.md](SECURITY.md) for security problems.
+
+## Install and update
 
 ```sh
-git clone git@github.com:nervouna/wildbrew.git
+git clone https://github.com/nervouna/wildbrew.git
 cd wildbrew
 ./scripts/build-app.sh
 ```
 
-将生成的 `dist/Wildbrew.app` 复制到「应用程序」目录后打开。更新应用时，拉取最新源码，重新构建，退出应用后替换原有副本。构建脚本不会安装软件或修改本机 Homebrew。
+Copy the resulting `dist/Wildbrew.app` to `Applications` and open it. To update, pull the latest source, build again, quit the app and replace the old copy. The build script does not install software or change your Homebrew.
 
-## 使用
+## Use
 
-打开 `Wildbrew.app`，在「设置」中填写 `brew` 路径，然后点击「保存设置」。Apple Silicon 默认路径为 `/opt/homebrew/bin/brew`；Intel Mac 通常为 `/usr/local/bin/brew`。
+Open `Wildbrew.app`. In 设置 (Settings), check the brew 路径 (brew path) and click 保存设置 (Save settings). The default is `/opt/homebrew/bin/brew`, the Apple Silicon location; on an Intel Mac it is usually `/usr/local/bin/brew`.
 
-- 「发现」浏览官方目录，按软件名、描述和类型搜索，选择软件后安装。「已安装」查看版本、依赖、许可证、文件和元数据，支持升级、重装、卸载和固定版本。
-- 「更新」检查软件更新，也可单独更新 Homebrew。开启「包含自动更新和 latest」后，检查和升级会包含相应 Cask。
-- 「服务」管理用户或系统服务，分别显示运行状态和登录注册状态。系统服务操作使用 macOS 管理员认证。
-- 「清理」预览或清理缓存、旧版本和多余依赖。「依赖」查看依赖树、反向依赖及链接状态。
-- 「软件源」添加或移除 Tap，浏览第三方软件，管理 Tap、Formula、Cask 和命令的信任记录。
-- 「Brewfile」打开、新建、编辑、保存和导出环境，检查清单、安装环境、增删条目和清理环境。文件保留原始 Ruby 内容，执行清单操作时先保存当前内容。
-- 「诊断」检查配置、缺失依赖、链接和漏洞。「高级」查看配方历史记录，安装历史版本、HEAD 或源码版本，预下载软件及执行安装后步骤。历史记录由本地 Tap 的 Git 记录提供。
+- 发现 (Discover) browses the official catalog, searches by name, description and type, and installs what you pick. 已安装 (Installed) shows versions, dependencies, licenses, files and metadata, and can upgrade, reinstall, uninstall and pin.
+- 更新 (Updates) checks for outdated packages and can update Homebrew itself. With 包含自动更新和 latest (Include auto-updating and latest) on, checks and upgrades include casks that update themselves or use `latest`.
+- 服务 (Services) manages user and system services and shows running and registration state separately. System service actions ask for an administrator password through macOS.
+- 清理 (Cleanup) previews or removes caches, old versions and unused dependencies. 依赖 (Dependencies) shows the dependency tree, reverse dependencies and link state.
+- 软件源 (Taps) adds and removes taps, browses third-party packages, and manages trust records for taps, formulae, casks and commands.
+- Brewfile opens, creates, edits, saves and exports environments, checks them, installs them, adds and removes entries, and runs 清理环境 (Clean up environment). The file keeps its raw Ruby content; Wildbrew saves your edits before running a Brewfile command.
+- 诊断 (Diagnostics) checks configuration, missing dependencies, links and known vulnerabilities. 高级 (Advanced) shows a formula's history and installs a past version, HEAD or a build from source, prefetches downloads and runs post-install steps. History comes from the Git history of your local taps.
 
-任务串行执行，支持取消、重试、复制命令和「在终端执行」。运行中的任务显示不定进度条，进度条不表示完成百分比。终端执行的结果需要手动点击「刷新状态」读取；应用不会把终端接收命令记为完成。重试使用原任务的设置。普通 Cask 安装如果需要交互式管理员认证，可在终端执行。
+Tasks run one at a time. The task console, at the bottom of each section and in 任务 (Tasks), can cancel a task (取消任务), retry it with its original settings (重试任务), copy its command (复制命令) or hand it to Terminal (在终端执行, Run in Terminal). A running task shows a progress bar that does not measure completion. Wildbrew does not track commands handed to Terminal: click 刷新状态 (Refresh status) when they finish. If a cask install needs an interactive administrator password, run it in Terminal.
 
-「清理环境」会移除 Brewfile 未声明的软件。「卸载并移除数据」使用 Homebrew 的 `--zap`，可移除应用数据及共享文件。其他卸载保留 Homebrew 默认行为。
+## Permissions
 
-## 设置和数据
+- **Administrator password:** only for system service actions, through the standard macOS prompt. Wildbrew does not store it.
+- **Automation (Terminal):** macOS asks once, the first time you use 在终端执行 (Run in Terminal).
+- The app is not sandboxed. It runs `brew` as your user, with your user's access to files.
 
-设置存于 macOS UserDefaults，点击「保存设置」后保留。任务和日志仅保留到应用退出。Brewfile 只写入用户选择的文件；目录按钮打开 Homebrew 查询返回的真实目录。更新检查默认关闭，设定分钟数并保存后，在应用运行期间检查。
+## Settings and data
 
-官方目录来自 `formulae.brew.sh`。Homebrew 命令按自身行为访问软件源、下载服务器、GitHub 和 OSV.dev。统计开关直接修改 Homebrew 的 analytics 状态。软件安装选项、语言、应用目录、缓存位置及自动更新、自动清理设置用于后续新建任务。
+- Settings are kept in macOS UserDefaults after you click 保存设置 (Save settings). Extra environment values are not saved. Wildbrew has no place to enter or store credentials.
+- Tasks and their logs, and the package catalogs, stay in memory until the app quits.
+- Brewfiles are written only to files you choose. Directory buttons open the real paths Homebrew reports.
+- Nothing changes on launch. The periodic update check is off by default; set 更新检查间隔 (Update check interval, in minutes) and save to turn it on while the app runs.
+- The 统计 (Analytics) buttons read or change Homebrew's own analytics setting.
+- Install options, language, application directory, cache location, and the auto-update and auto-cleanup settings apply to tasks created after you save them.
 
-## 开发和验收
+## Network
 
-架构、构建、签名、测试和 Tart 隔离验收见 [技术说明](docs/architecture.md)。实际验收范围见 [验收记录](docs/validation.md)，图标源文件和制作流程见 [图标说明](Resources/AppIcon/README.md)。虚拟机磁盘、下载缓存和本地构建产物不纳入 Git。
+Wildbrew downloads the official catalog from `formulae.brew.sh`. Everything else is Homebrew's own traffic: the `brew` commands it runs contact taps, download servers, GitHub and OSV.dev as they would in Terminal.
 
-## 许可证
+## Uninstall
 
-Wildbrew 使用 [MIT License](LICENSE)。第三方依赖保留各自的许可证，Swift Subprocess 的许可证见其 [源码仓库](https://github.com/swiftlang/swift-subprocess)。
+Quit Wildbrew and move `Wildbrew.app` to the Trash. To remove its settings too, run `defaults delete com.nervouna.wildbrew`. Packages you installed with Wildbrew stay installed; remove them with `brew` if you want them gone.
+
+## Development
+
+Architecture, build, signing, tests and isolated acceptance in a Tart VM are in [docs/architecture.md](docs/architecture.md). What has actually been verified is in [docs/validation.md](docs/validation.md), and the icon's source files and workflow in [Resources/AppIcon/README.md](Resources/AppIcon/README.md). The build script also produces `dist/wildbrew-check`, a command-line tool that runs the same command layer as the app for acceptance tests. VM disks, download caches and local build output are not committed.
+
+## License
+
+Wildbrew is under the [MIT License](LICENSE). Third-party dependencies keep their own licenses; Swift Subprocess's is in its [repository](https://github.com/swiftlang/swift-subprocess).

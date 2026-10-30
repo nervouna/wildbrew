@@ -1,0 +1,63 @@
+# Wildbrew
+
+[English](README.md) | 简体中文
+
+<img src="Resources/AppIcon/Preview.png" alt="Wildbrew 图标" width="128">
+
+Wildbrew 是 macOS 原生 Homebrew 管理应用，支持 Formula、Cask、服务、软件源和 Brewfile。界面使用中文，任务窗口显示 Homebrew 的原始输出。
+
+这是自用实验项目，使用 SwiftUI、SF Symbols 和 Swift Subprocess 实现。应用图标由 Icon Composer 制作，关闭 Liquid Glass 效果。
+
+## 状态
+
+Wildbrew 是自用实验项目，由作者开发和使用，面向已经在用 Homebrew、想要图形界面的用户，不替代 Homebrew 本身。
+
+Wildbrew 会在本机执行真实的 Homebrew 命令：安装、升级、卸载软件，启停服务，修改 Homebrew 设置，效果与在终端执行相同的 `brew` 命令一致。部分操作会删除内容：「清理环境」执行 `brew bundle cleanup --force`，移除当前 Brewfile 未声明的所有内容；「卸载并移除数据」对 Cask 执行 `brew uninstall --zap`，同时删除应用数据和共享文件。点击后直接执行，没有确认对话框。系统服务操作在 macOS 管理员认证后以 root 身份运行。
+
+运行需要 macOS 15 或更新版本和 Homebrew。完整验收在 Apple Silicon 和 macOS 26 上进行；Intel Mac 和 macOS 15 属于支持目标，尚未实际验证（见 [验收记录](docs/validation.md)）。界面只有中文。
+
+发布版本只包含源码，不提供预构建的应用，请按下文从源码构建。构建产物使用 ad hoc 签名，仅供本机使用，未经公证。
+
+报告问题或提交修复见 [CONTRIBUTING.md](CONTRIBUTING.md)，安全问题见 [SECURITY.md](SECURITY.md)。
+
+## 安装和更新
+
+需要 macOS 15 或更新版本、已安装的 Homebrew，以及支持 Swift 6.2 和 Icon Composer 的 Xcode。本项目提供源码构建，产物使用本地 ad hoc 签名。
+
+```sh
+git clone git@github.com:nervouna/wildbrew.git
+cd wildbrew
+./scripts/build-app.sh
+```
+
+将生成的 `dist/Wildbrew.app` 复制到「应用程序」目录后打开。更新应用时，拉取最新源码，重新构建，退出应用后替换原有副本。构建脚本不会安装软件或修改本机 Homebrew。
+
+## 使用
+
+打开 `Wildbrew.app`，在「设置」中填写 `brew` 路径，然后点击「保存设置」。Apple Silicon 默认路径为 `/opt/homebrew/bin/brew`；Intel Mac 通常为 `/usr/local/bin/brew`。
+
+- 「发现」浏览官方目录，按软件名、描述和类型搜索，选择软件后安装。「已安装」查看版本、依赖、许可证、文件和元数据，支持升级、重装、卸载和固定版本。
+- 「更新」检查软件更新，也可单独更新 Homebrew。开启「包含自动更新和 latest」后，检查和升级会包含相应 Cask。
+- 「服务」管理用户或系统服务，分别显示运行状态和登录注册状态。系统服务操作使用 macOS 管理员认证。
+- 「清理」预览或清理缓存、旧版本和多余依赖。「依赖」查看依赖树、反向依赖及链接状态。
+- 「软件源」添加或移除 Tap，浏览第三方软件，管理 Tap、Formula、Cask 和命令的信任记录。
+- 「Brewfile」打开、新建、编辑、保存和导出环境，检查清单、安装环境、增删条目和清理环境。文件保留原始 Ruby 内容，执行清单操作时先保存当前内容。
+- 「诊断」检查配置、缺失依赖、链接和漏洞。「高级」查看配方历史记录，安装历史版本、HEAD 或源码版本，预下载软件及执行安装后步骤。历史记录由本地 Tap 的 Git 记录提供。
+
+任务串行执行，支持取消、重试、复制命令和「在终端执行」。运行中的任务显示不定进度条，进度条不表示完成百分比。终端执行的结果需要手动点击「刷新状态」读取；应用不会把终端接收命令记为完成。重试使用原任务的设置。普通 Cask 安装如果需要交互式管理员认证，可在终端执行。
+
+「清理环境」会移除 Brewfile 未声明的软件。「卸载并移除数据」使用 Homebrew 的 `--zap`，可移除应用数据及共享文件。其他卸载保留 Homebrew 默认行为。
+
+## 设置和数据
+
+设置存于 macOS UserDefaults，点击「保存设置」后保留。任务和日志仅保留到应用退出。Brewfile 只写入用户选择的文件；目录按钮打开 Homebrew 查询返回的真实目录。更新检查默认关闭，设定分钟数并保存后，在应用运行期间检查。
+
+官方目录来自 `formulae.brew.sh`。Homebrew 命令按自身行为访问软件源、下载服务器、GitHub 和 OSV.dev。统计开关直接修改 Homebrew 的 analytics 状态。软件安装选项、语言、应用目录、缓存位置及自动更新、自动清理设置用于后续新建任务。
+
+## 开发和验收
+
+架构、构建、签名、测试和 Tart 隔离验收见 [技术说明](docs/architecture.md)。实际验收范围见 [验收记录](docs/validation.md)，图标源文件和制作流程见 [图标说明](Resources/AppIcon/README.md)。虚拟机磁盘、下载缓存和本地构建产物不纳入 Git。
+
+## 许可证
+
+Wildbrew 使用 [MIT License](LICENSE)。第三方依赖保留各自的许可证，Swift Subprocess 的许可证见其 [源码仓库](https://github.com/swiftlang/swift-subprocess)。
