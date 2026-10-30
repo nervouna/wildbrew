@@ -6,13 +6,11 @@ English | [简体中文](README.zh-CN.md)
 ![macOS 15+](https://img.shields.io/badge/macOS-15%2B-lightgrey)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-<!-- banner -->
-
-<img src="Resources/AppIcon/Preview.png" alt="Wildbrew icon" width="128">
+![Wildbrew](docs/images/banner.jpg)
 
 Wildbrew is a native macOS app for managing Homebrew: formulae, casks, services, taps and Brewfiles. It runs the `brew` commands for you, one at a time, and shows Homebrew's own output in a task window.
 
-<!-- screenshots -->
+![The 发现 (Discover) view listing Homebrew formulae and casks](docs/images/discover.png)
 
 ## Status
 
