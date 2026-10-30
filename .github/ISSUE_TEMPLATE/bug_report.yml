@@ -1,0 +1,61 @@
+name: Bug report
+description: Something in Wildbrew does not work as described
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: What you did and what went wrong. Include the task's command (复制命令, Copy command) and its output if there is one.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: How to reproduce
+      description: The steps, and the package, tap or Brewfile involved.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Commit
+      description: The commit you built (`git rev-parse --short HEAD`).
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: macOS and Homebrew versions
+      description: Your macOS version, Mac type (Apple Silicon or Intel) and the output of `brew --version`.
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where
+      options:
+        - 发现 / 已安装 (Discover / Installed)
+        - 更新 (Updates)
+        - 服务 (Services)
+        - 清理 / 依赖 (Cleanup / Dependencies)
+        - 软件源 (Taps)
+        - Brewfile
+        - 诊断 / 高级 (Diagnostics / Advanced)
+        - 任务 (Tasks, task console, Terminal handoff)
+        - 设置 (Settings)
+        - Build script
+        - Docs
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: Suggested fix
+      description: Optional. If you know where the cause is, say so.
